@@ -32,7 +32,7 @@ func GetUser(response http.ResponseWriter, request *http.Request) {
 	}
 
 	//SE I PARAMETRI SONO OK, ALLORA CHIAMA SERVICE
-	user, apiError := services.GetUser(userID)
+	user, apiError := services.UserService.GetUser(userID)
 	if apiError != nil {
 		jsonValue, _ := json.Marshal(apiError)
 		response.WriteHeader(apiError.StatusCode)
