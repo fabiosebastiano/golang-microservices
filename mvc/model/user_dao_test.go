@@ -10,6 +10,7 @@ import (
 func TestGetUserUserNotFound(t *testing.T) {
 	user, err := UserDao.GetUser(0)
 
+
 	assert.Nil(t, user, "unexpected user with id 0")
 	assert.NotNil(t, err)
 	assert.EqualValues(t, http.StatusNotFound, err.StatusCode)
