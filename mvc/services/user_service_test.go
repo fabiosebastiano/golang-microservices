@@ -12,10 +12,10 @@ import (
 var (
 	userDaoMock usersDaoMock
 
-	getUserFunction func(userId int64)(*model.User, *utils.ApplicationError) 
+	getUserFunction func(userId int64) (*model.User, *utils.ApplicationError)
 )
 
-func init(){
+func init() {
 	model.UserDao = &userDaoMock
 }
 
@@ -28,10 +28,10 @@ func (m *usersDaoMock) GetUser(userId int64) (*model.User, *utils.ApplicationErr
 }
 
 func TestGetUserNotFoundInDatabase(t *testing.T) {
-	getUserFunction = func(userId int64)(*model.User, *utils.ApplicationError){
+	getUserFunction = func(userId int64) (*model.User, *utils.ApplicationError) {
 		return nil, &utils.ApplicationError{
 			StatusCode: http.StatusNotFound,
-			Meesage: "user 0 does not exists"
+			Message:    "user 0 does not exists",
 		}
 	}
 
@@ -45,9 +45,9 @@ func TestGetUserNotFoundInDatabase(t *testing.T) {
 }
 func TestGetUserNoError(t *testing.T) {
 
-	getUserFunction = func(userId int64)(*model.User, *utils.ApplicationError){
+	getUserFunction = func(userId int64) (*model.User, *utils.ApplicationError) {
 		return &model.User{
-			userId: 1,
+			Id:        1,
 			FirstName: "fabio",
 		}, nil
 	}
