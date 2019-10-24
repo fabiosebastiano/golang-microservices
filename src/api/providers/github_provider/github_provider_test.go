@@ -18,6 +18,13 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestConstants(t *testing.T) {
+	assert.EqualValues(t, "Authorization", headerAuthorization)
+	assert.EqualValues(t, "token %s", headerAuthorizationFormat)
+	assert.EqualValues(t, "https://api.github.com/user/repos", urlCreateRepo)
+
+}
+
 func TestGetAuthorizationHeader(t *testing.T) {
 	header := getAuthorizationHeader("abc123")
 	assert.NotNil(t, header)
@@ -93,4 +100,40 @@ func TestCreateRepoUnauthorized(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.EqualValues(t, "Requires authentication", err.Message)
 	assert.EqualValues(t, http.StatusUnauthorized, err.StatusCode)
+}
+func TestCreateInvalidSuccessResponse(t *testing.T) {
+	restclient.FlushMocks()
+	restclient.AddMockup(restclient.Mock{
+		Url:        "https://api.github.com/user/repos",
+		HttpMethod: http.MethodPost,
+		Response: &http.Response{
+			StatusCode: http.StatusCreated,
+			Body:       ioutil.NopCloser(strings.NewReader(`{"id":"123"}`)),
+		},
+	},
+	)
+	response, err := CreateRepo("", github.CreateRepoRequest{})
+	assert.Nil(t, response)
+	assert.NotNil(t, err)
+	assert.EqualValues(t, http.StatusInternalServerError, err.StatusCode)
+	assert.EqualValues(t, "Error unmarshalling successful response", err.Message)
+}
+
+func TestCreateRepoNoError(t *testing.T) {
+	restclient.FlushMocks()
+	restclient.AddMockup(restclient.Mock{
+		Url:        "https://api.github.com/user/repos",
+		HttpMethod: http.MethodPost,
+		Response: &http.Response{
+			StatusCode: http.StatusCreated,
+			Body:       ioutil.NopCloser(strings.NewReader(`{"id":123, "name":"golang-tutorial", "full_name":"fabiosebastiano/golang-tutorial"}`)),
+		},
+	},
+	)
+	response, err := CreateRepo("", github.CreateRepoRequest{})
+	assert.Nil(t, err)
+	assert.NotNil(t, response)
+	assert.EqualValues(t, response.Id, 123)
+	assert.EqualValues(t, response.Name, "golang-tutorial")
+	assert.EqualValues(t, response.FullName, "fabiosebastiano/golang-tutorial")
 }

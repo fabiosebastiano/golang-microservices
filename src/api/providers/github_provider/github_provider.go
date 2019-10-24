@@ -62,7 +62,6 @@ func CreateRepo(authorizationToken string, request github.CreateRepoRequest) (*g
 
 	var result github.CreateRepoResponse
 	if err := json.Unmarshal(bytes, &result); err != nil {
-		log.Printf("error when trying to unmarshale create repo successful response: %s", err.Error())
 		return nil, &github.GithubErrorResponse{
 			StatusCode: http.StatusInternalServerError,
 			Message:    "Error unmarshalling successful response",
