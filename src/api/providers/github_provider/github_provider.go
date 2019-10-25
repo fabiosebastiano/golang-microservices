@@ -21,18 +21,20 @@ const (
 )
 
 func getAuthorizationHeader(authorizationToken string) string {
+
 	return fmt.Sprintf(headerAuthorizationFormat, authorizationToken) //) //verrà poi spostato in un SECRET
 }
 
 //CreateRepo .
 func CreateRepo(authorizationToken string, request github.CreateRepoRequest) (*github.CreateRepoResponse, *github.GithubErrorResponse) {
 	headers := http.Header{}
+	log.Printf("Token dentro create %s", authorizationToken)
+
 	headers.Set(headerAuthorization, getAuthorizationHeader(authorizationToken)) //"3bf869c0268cf940222245eed3f0d276301f02b9"
 
 	response, err := restclient.Post(urlCreateRepo, request, headers)
 
 	if err != nil {
-		log.Printf("error when trying to create new repo in github: %s", err.Error())
 		return nil, &github.GithubErrorResponse{
 			StatusCode: http.StatusInternalServerError,
 			Message:    err.Error(),
