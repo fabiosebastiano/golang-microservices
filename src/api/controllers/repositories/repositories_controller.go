@@ -18,8 +18,8 @@ func CreateRepo(c *gin.Context) {
 		c.JSON(apiError.Status(), apiError)
 		return
 	}
-
-	result, error := services.RepositoryService.CreateRepo(request)
+	clientId := c.GetHeader("x-Client-Id")
+	result, error := services.RepositoryService.CreateRepo(clientId, request)
 	if error != nil {
 		c.JSON(error.Status(), error)
 		return
